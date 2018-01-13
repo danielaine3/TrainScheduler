@@ -27,13 +27,19 @@
 			<p class="lead">Catch a (midnight) train going anywhere.</p>
 		</div>
 	</div>
-
 	<div class="container">
+		<div class= "panel panel-default">
+			<div class = "panel-heading">
+				<h3 class="panel-title">Current Time</h3>
+			</div>
+			<div class="panel-body" id="current-time">
+			</div>
+		</div>
+		<br>
 		<div class="panel panel-default">
 			<div class="panel-heading">
 	    		<h3 class="panel-title">Current Train Schedule</h3>
 	    	</div>
-	  	
 		  	<div class="panel-body" id="current-trains">
 		     	<table class= "table table-hover" id="train-table">
 		     		<thead>
@@ -76,7 +82,7 @@
 				  	<br>
 				    <input type="text" class="input" id="frequency-input">
 				  </div>
-				  <button type="submit" class="input" id="submit">Submit</button>
+				  <button type="submit" id="submit">Submit</button>
 				</form>
 			</div>
 		</div>

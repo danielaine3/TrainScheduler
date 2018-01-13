@@ -10,6 +10,14 @@ var config = {
   firebase.initializeApp(config);
 //create a variable to reference firebase
 var database = firebase.database();
+moment().format;
+var date = null;
+//Update current date and time
+var updatedTime = function(){
+  date = moment();
+  $("#current-time").html(date.format('dddd, MMMM Do YYYY, h:mm:ss A'));
+};
+updatedTime();
 //Capture button click
 $("#submit").on("click", function(event){
  	//Don't refresh the page
@@ -64,8 +72,10 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 	//next train formatted to 24hr/military time
 	var nextTrain= moment(nextT).format("kk:mm");
 	console.log("Arrival time: " + nextTrain);
-	//Append train info to the table
-	$(".table").append("<tr><td>" + trainName + "</td><td>" 
-		+ destination + "</td><td>" + firstTrain + "</td><td>" + frequency + 
-		"</td><td>" + nextTrain + "</td><td>" + mins + "</td></tr>");
+  //Append train info to the table
+  $(".table").append("<tr><td>" + trainName + "</td><td>" 
+    + destination + "</td><td>" + firstTrain + "</td><td>" + frequency + 
+    "</td><td>" + nextTrain + "</td><td>" + mins + 
+    "</td><td><button type='button'class='btn-danger'>Delete</buttong</td></tr>");
 });
+
