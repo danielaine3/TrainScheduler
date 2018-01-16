@@ -14,42 +14,32 @@ var database = firebase.database();
 
 //create a reference to the root of database  and child to store train time details
 var trainSched = firebase.database().ref().child('trainSched');
+var trainId = 0;
+// var mins = "";
 
-//create variables to set current time
-moment().format;
-var mins = 0;
-// var intervalId = setInterval(decrement, 60000);
+//Set initial date/time and update it every second
+$("#current-time").html(moment().format('dddd, MMMM Do YYYY, h:mm:ss A'));
+setInterval(function(){
+  $("#current-time").html(moment().format('dddd, MMMM Do YYYY, h:mm:ss A'));
+}, 1000);
 
-var date = null;
+//Calculate how many minutes until next full minute
+var time = new Date();
+var secondsRemaining = (60 - time.getSeconds()) * 1000 - time.getMilliseconds();
 
-//Update current date and time
-var updatedTime = function(){
-  date = moment();
-  setInterval(updatedTime, 1000)
-  $("#current-time").html(date.format('dddd, MMMM Do YYYY, h:mm:ss A'));
-};
-updatedTime();
+//Use timeout to start the interval at the next full minute
+setTimeout(function(){
+  //run initially, then again every minute
+  updateArrivalTimes();
+  setInterval(function(){
+    updateArrivalTimes();
+  }, 60000);
+}, secondsRemaining);
 
-// setInterval(updateTrainTime, 1000 * 5)
 
-// function decrement(){
-//   mins--;
-
-//   $("#mins").html(mins);
-//   //Update train times every one minute
-//   if (mins === 0){
-//     console.log("minutes = 0");
-
-//   } else {
-//     console.log("Wait");
-//   };
-// };
-// Else (decrement minutes away by 1 each minute)
-//Set up delete button
 
 //Capture button click
 $("#submit").on("click", function(event){
-
  	//Don't refresh the page
  	event.preventDefault();
 
@@ -71,6 +61,7 @@ $("#submit").on("click", function(event){
 		destination: destinationInput,
 		frequency:frequencyInput,
 		firstTrain:firstTrainInput,
+    mins:0,
 	}
 
 	//pushing newTrain object to firebase
@@ -84,8 +75,6 @@ $("#submit").on("click", function(event){
 
 //When a new child added execute the following
 database.ref().on("child_added", function(snapshot, prevChildKey){
-  // console.log(prevChildKey);
-  console.log(snapshot.key);
 	//assign variables to snapshots
 	var trainName = snapshot.val().trainName;
 	var destination = snapshot.val().destination;
@@ -99,14 +88,15 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 
 	//Difference between times
 	var timeDiff = moment().diff(moment(firstTrainConvert), "minutes");
-	console.log("Difference in time: "	+timeDiff);
+	console.log("Difference in time: "	+ timeDiff);
 
 	//Time apart (remainder)
 	var timeRemain =  timeDiff % frequency;
 	console.log(timeRemain);
 
-	//minutes until train
+	//minutes until next train
 	var mins = frequency - timeRemain;
+  database.ref(snapshot.key + "/mins").set(mins);
 	console.log("Minutes until train: " + mins);
 
 	//next train
@@ -117,40 +107,38 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 	console.log("Arrival time: " + nextTrain);
 
   //Append train info to the table
-  $(".table").append("<tr><td>" + trainName + "</td><td>" 
-    + destination + "</td><td>" + firstTrain + "</td><td>" + frequency + 
-    "</td><td>" + nextTrain + "</td><td id='mins'>" + mins + 
-    "</td><td><button type='button'class='btn-danger'id='remove' data-key='"+ snapshot.key 
-    +"'>Remove</button></td></tr>");
+  var row = $("<tr class ='trainRow' id='train" + trainId +"'>")
+    .append($("<td>" + trainName + "</td>"))
+    .append($("<td>" + destination + "</td>"))
+    .append($("<td>" + firstTrain + "</td>"))
+    .append($("<td>" + frequency + "</td>"))
+    .append($("<td>" + nextTrain + "</td>"))
+    .append($("<td class='mins' id='mins" + trainId +"'>" + mins + "</td>"));
+  var deleteButton = $("<button>").addClass("btn-danger");
+    deleteButton.attr("id", "remove");
+    deleteButton.attr("data-key", snapshot.key);
+    deleteButton.html("Remove");
+
+  row.append($('<td>').append(deleteButton));
+  $(".table").append(row);
+  trainId++;
+}, function(errorObject){
+  console.log("The read failed: " + errorObject.code);
 });
 
-// decrement();
-
-//Update the train times once every minute
-// function updateTrainTime(){
-//   console.log("---------------------------------");
-//   console.log("Updating train time once for every minute");
-//   trainSched.once('value', function(snapshot){
-//     snapshot.forEach(function(childSnapshot){
-//       var newTrain = {
-//         trainName: snapshot.val().trainName,
-//         nextTrain: null,
-//         frequency: 0
-//       };
-
-//       newTrain = updateData(childSnapshot);
-
-//       var idTrainTime = childSnapshot.val().trainName.substr(0,3) + "Next";
-//       console.log(idTrainTime);
-//       var idMin = childSnapshot.val().trainName.substr(0,3) + "min";
-
-//       $("#" + idTrainTime).html(newTrain.nextTrain.format('HH:mm A'));
-//       $("#" + idMin).html(newTrain.mins);
-//     });
-//   });
-// }
-// database.ref().child('-L2mwEtMn2cy4NoSMaT6').remove();
-console.log()
+function updateArrivalTimes(snapshot){
+  // var mins = snapshot.val().mins;
+  $(".trainRow").each(function(){
+    mins - 1;
+    if (mins <= 0){
+      console.log("minutes = 0");
+      $(".mins").text(mins);
+    } else {
+       console.log("wait.");
+       $(".mins").text(mins);    
+    }
+  });
+};
 
 $(document).on('click', '.btn-danger', function() {
   var removekey = $(this).attr('data-key');
@@ -159,8 +147,7 @@ $(document).on('click', '.btn-danger', function() {
   database.ref().child(removekey).remove();
   console.log("child removed.")
   currentRow.remove();
-});  
-
+}); 
 
 
 
