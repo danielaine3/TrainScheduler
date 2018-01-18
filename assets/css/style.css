@@ -44,6 +44,16 @@ body {
 	text-align:center;
 }
 
+#remove {
+	background-color: #7E1F3B;
+	padding:5px 10px 5px 10px;
+	border-radius:10px; 
+}
+
+#remove:hover {
+	background-color:#062764;
+}
+
 th {
 	font-weight: bold;
 }
