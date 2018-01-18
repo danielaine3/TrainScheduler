@@ -52,7 +52,6 @@ $("#submit").on("click", function(event){
 		firstTrain:firstTrainInput,
     mins:0,
 	}
-
 	//pushing newTrain object to firebase
 	database.ref().push(newTrain);
 	//Clears form inputs
@@ -61,6 +60,7 @@ $("#submit").on("click", function(event){
 	$("#first-train-input").val("");
 	$("#frequency-input").val("");
 });
+
 
 //When a new child added execute the following
 database.ref().on("child_added", function(snapshot, prevChildKey){
@@ -85,7 +85,8 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 
 	//minutes until next train
 	var mins = frequency - timeRemain;
-  database.ref(snapshot.key + "/mins").set(mins);
+  //Save minute variable to database
+  // database.ref(snapshot.key + "/mins").set(mins);
 	console.log("Minutes until train: " + mins);
 
 	//next train
@@ -95,58 +96,31 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 	var nextTrain= moment(nextT).format("kk:mm");
 	console.log("Arrival time: " + nextTrain);
 
-  // var mins = snapshot.val().mins
-  function updateArrivalTimes(){
-    database.ref(snapshot.key + "/mins").set(mins);
-    mins--;
-    $(".trainRow").each(function(){
-      if (mins <= 0){
-        console.log("minutes = 0");
-        console.log(mins);
-        $('#' + trainId).text(frequency);
-      } else {
-         console.log("wait.");
-         console.log(mins);
-         $('#' + trainId).text(mins);
-      }
-    });
-  };
 
   //Append train info to the table
-  // function updateSchedule(){
-    var row = $("<tr class ='trainRow' id='train" + trainId +"'>")
-      .append($("<td>" + trainName + "</td>"))
-      .append($("<td>" + destination + "</td>"))
-      .append($("<td>" + firstTrain + "</td>"))
-      .append($("<td>" + frequency + "</td>"))
-      .append($("<td>" + nextTrain + "</td>"))
-      .append($("<td class='mins' id=" + trainId +"'>" + mins + "</td>"));
-    var deleteButton = $("<button>").addClass("btn-danger");
-      deleteButton.attr("id", "remove");
-      deleteButton.attr("data-key", snapshot.key);
-      deleteButton.html("Remove");
+  var row = $("<tr class ='trainRow' id='train" + trainId +"'>")
+    .append($("<td>" + trainName + "</td>"))
+    .append($("<td>" + destination + "</td>"))
+    .append($("<td>" + firstTrain + "</td>"))
+    .append($("<td>" + frequency + "</td>"))
+    .append($("<td class='next'>" + nextTrain + "</td>"))
+    .append($("<td class='mins' id=mins" + trainId +"'>" + mins + "</td>"));
+  var deleteButton = $("<button>").addClass("btn-danger");
+    deleteButton.attr("id", "remove");
+    deleteButton.attr("data-key", snapshot.key);
+    deleteButton.html("Remove");
 
-    row.append($('<td>').append(deleteButton));
-    $(".table").append(row);
-    trainId++;
-  // };
-  
-  // updateSchedule();
+  row.append($('<td>').append(deleteButton));
+  $(".table").append(row);
+  trainId++;
 
-  //Use timeout to start the interval at the next full minute
-  setTimeout(function(){
-    //run initially, then again every minute
-    updateArrivalTimes();
-    setInterval(function(){
-      updateArrivalTimes();
-    }, 60000);
-  }, secondsRemaining);
 
+//error handler
 },function(errorObject){
     console.log("The read failed: " + errorObject.code);
 });
 
-
+//Set Remove button to delete assigned table row
 $(document).on('click', '.btn-danger', function() {
   var removekey = $(this).attr('data-key');
   var currentRow = (this).closest('tr');
@@ -155,7 +129,5 @@ $(document).on('click', '.btn-danger', function() {
   console.log("child removed.")
   currentRow.remove();
 }); 
-
-
 
 
