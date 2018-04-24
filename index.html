@@ -4,9 +4,7 @@
 <head>
 	<meta charset= "UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<title> 
-		Train Scheduler
-	</title>
+	<title> Train Scheduler</title>
 	<!--Link to reset CSS-->
     <link rel="stylesheet" type="text/css" href="assets/css/reset.css">
     <!--Link to googlefonts-->
@@ -21,12 +19,15 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
 </head>
 <body>
+	<!-- jumbotron for title -->
 	<div class="jumbotron jumbotron-fluid">
 		<div class="container">
 			<h1 class="jumbo-title">Train Time</h1>
 			<p class="lead">Catch a (midnight) train going anywhere.</p>
 		</div>
 	</div>
+
+	<!-- Current time div -->
 	<div class="container">
 		<div class= "panel panel-default">
 			<div class = "panel-heading">
@@ -36,12 +37,14 @@
 			</div>
 		</div>
 		<br>
+		<!-- Trian schedule panel -->
 		<div class="panel panel-default">
 			<div class="panel-heading">
 	    		<h3 class="panel-title">Current Train Schedule</h3>
 	    	</div>
 		  	<div class="panel-body" id="current-trains">
 		     	<table class= "table table-hover" id="train-table">
+		     		<!-- Table -->
 		     		<thead>
 		     			<tr>
 							<th>Train Name</th>

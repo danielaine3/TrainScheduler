@@ -7,7 +7,8 @@ var config = {
     storageBucket: "trainscheduler-dcac1.appspot.com",
     messagingSenderId: "662389390493"
   };
-  firebase.initializeApp(config);
+
+firebase.initializeApp(config);
 //create a variable to reference firebase
 var database = firebase.database();
 //create a reference to the root of database  and child to store train time details
@@ -18,9 +19,11 @@ $("#current-time").html(moment().format('dddd, MMMM Do YYYY, h:mm:ss A'));
 setInterval(function(){
   $("#current-time").html(moment().format('dddd, MMMM Do YYYY, h:mm:ss A'));
 }, 1000);
+
 //Calculate how many minutes until next full minute
 var time = new Date();
 var secondsRemaining = (60 - time.getSeconds()) * 1000 - time.getMilliseconds();
+
 //Capture button click
 $("#submit").on("click", function(event){
  	//Don't refresh the page
@@ -51,6 +54,7 @@ $("#submit").on("click", function(event){
 	$("#first-train-input").val("");
 	$("#frequency-input").val("");
 });
+
 //When a new child added execute the following
 database.ref().on("child_added", function(snapshot, prevChildKey){
 	//assign variables to snapshots
@@ -94,6 +98,7 @@ database.ref().on("child_added", function(snapshot, prevChildKey){
 },function(errorObject){
     console.log("The read failed: " + errorObject.code);
 });
+
 //Set Remove button to delete assigned table row
 $(document).on('click', '.btn-danger', function() {
   var removekey = $(this).attr('data-key');
